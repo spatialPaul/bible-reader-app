@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Bible Reader</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #3E64FF;
+            --secondary-color: #5A31F4;
+            --success-color: #2ECC71;
+            --warning-color: #F4D03F;
+            --background-light: #FFFFFF;
+            --background-card: #F9F9F9;
+            --text-dark: #333333;
+            --text-medium: #666666;
+            --border-color: #E0E0E0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-dark);
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-container {
+            background-color: var(--background-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        .header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--background-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .greeting {
+            font-size: 14px;
+            color: var(--text-medium);
+        }
+
+        .user-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 4px 0;
+        }
+
+        .date {
+            font-size: 14px;
+            color: var(--text-medium);
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Progress Card */
+        .progress-card {
+            margin: 16px;
+            background-color: var(--background-light);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .progress-circle {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .progress-circle svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle-bg {
+            fill: none;
+            stroke: #E0E0E0;
+            stroke-width: 8;
+        }
+
+        .progress-circle-fill {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .progress-text {
+            margin-left: 20px;
+            flex: 1;
+        }
+
+        .progress-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .progress-subtitle {
+            color: var(--text-medium);
+            font-size: 16px;
+        }
+
+        /* Reading Cards */
+        .reading-card {
+            margin: 0 16px 16px 16px;
+            background-color: var(--background-light);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .reading-card.completed {
+            border-left: 5px solid var(--success-color);
+        }
+
+        .reading-content {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reading-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .reading-icon {
+            margin-right: 12px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+        }
+
+        .completed .reading-icon {
+            color: var(--success-color);
+        }
+
+        .reading-text {
+            flex: 1;
+        }
+
+        .reading-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .reading-reference {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .reading-time {
+            font-size: 12px;
+            color: var(--text-medium);
+        }
+
+        .reading-checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            border: 2px solid var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .reading-checkbox.checked {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+
+        .reading-actions {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Stats Container */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 16px;
+            background-color: var(--background-light);
+            margin: 0 16px 16px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-medium);
+            margin-top: 4px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0;
+            background-color: var(--background-light);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: var(--text-medium);
+        }
+
+        .nav-item.active i {
+            color: var(--primary-color);
+        }
+
+        .nav-label {
+            font-size: 12px;
+            color: var(--text-medium);
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--primary-color);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-bottom: 70px; /* Space for bottom nav */
+            overflow-y: auto;
+        }
+
+        /* Bible Reader Styles */
+        .reader-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .reader-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .reader-content {
+            padding: 20px;
+            font-family: 'Merriweather', serif;
+            line-height: 1.6;
+        }
+
+        .chapter-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--text-medium);
+            margin-bottom: 16px;
+        }
+
+        .verse-wrapper {
+            margin-bottom: 16px;
+        }
+
+        .verse-number {
+            font-size: 12px;
+            vertical-align: super;
+            color: var(--text-medium);
+            margin-right: 4px;
+        }
+
+        .verse-text {
+            font-size: 16px;
+        }
+
+        .reader-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            background-color: white;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        /* Calendar Screen Styles */
+        .calendar-container {
+            margin: 16px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-medium);
+            padding-bottom: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .calendar-day.today {
+            background-color: rgba(62, 100, 255, 0.1);
+            font-weight: bold;
+        }
+
+        .calendar-day.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .calendar-day.completed {
+            position: relative;
+        }
+
+        .calendar-day.completed::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+        }
+
+        .calendar-day.partial::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--warning-color);
+        }
+
+        .date-info-card {
+            margin: 16px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .date-title {
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Screen Hiding Logic */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+        
+        /* Transition Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .screen.active {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Community Screen Styles */
+        .tab-header {
+            display: flex;
+            background-color: white;
+            margin-bottom: 16px;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .search-bar {
+            margin: 16px;
+            padding: 12px 16px;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-bar i {
+            color: var(--text-medium);
+            margin-right: 8px;
+        }
+        
+        .search-input {
+            border: none;
+            flex: 1;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .friend-list {
+            margin: 0 16px;
+        }
+        
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .friend-info {
+            flex: 1;
+        }
+        
+        .friend-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .friend-stats {
+            font-size: 14px;
+            color: var(--text-medium);
+        }
+        
+        .add-friend-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        /* Settings Screen Styles */
+        .settings-group {
+            margin: 16px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-header {
+            padding: 12px 16px;
+            font-weight: 600;
+            color: var(--text-medium);
+            background-color: #f9f9f9;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .settings-icon {
+            width: 24px;
+            text-align: center;
+            margin-right: 16px;
+            color: var(--primary-color);
+        }
+        
+        .settings-text {
+            font-size: 16px;
+        }
+        
+        .settings-description {
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-top: 4px;
+        }
+        
+        .toggle {
+            position: relative;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--success-color);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen active">
+            <div class="header">
+                <div class="header-left">
+                    <div class="greeting">Good morning,</div>
+                    <div class="user-name">Sarah</div>
+                    <div class="date">Wednesday, March 19</div>
+                </div>
+                <div class="avatar">S</div>
+            </div>
+            
+            <div class="main-content">
+                <div class="progress-card">
+                    <div class="progress-content">
+                        <div class="progress-circle">
+                            <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+                                <circle class="progress-circle-bg" cx="40" cy="40" r="36"></circle>
+                                <circle class="progress-circle-fill" cx="40" cy="40" r="36" stroke-dasharray="75.4 226.2"></circle>
+                            </svg>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold;">1/3</div>
+                        </div>
+                        <div class="progress-text">
+                            <div class="progress-title">Today's Readings</div>
+                            <div class="progress-subtitle">1/3 readings completed</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reading-card completed">
+                    <div class="reading-content">
+                        <div class="reading-left">
+                            <div class="reading-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="reading-text">
+                                <div class="reading-title">Old Testament</div>
+                                <div class="reading-reference">Genesis 1:1-31</div>
+                                <div class="reading-time">10 min reading time</div>
+                            </div>
+                        </div>
+                        <div class="reading-checkbox checked">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="reading-actions">
+                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                    </div>
+                </div>
+                
+                <div class="reading-card">
+                    <div class="reading-content">
+                        <div class="reading-left">
+                            <div class="reading-icon">
+                                <i class="fas fa-cross"></i>
+                            </div>
+                            <div class="reading-text">
+                                <div class="reading-title">New Testament</div>
+                                <div class="reading-reference">Matthew 1:1-25</div>
+                                <div class="reading-time">5 min reading time</div>
+                            </div>
+                        </div>
+                        <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
+                    </div>
+                    <div class="reading-actions">
+                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                    </div>
+                </div>
+                
+                <div class="reading-card">
+                    <div class="reading-content">
+                        <div class="reading-left">
+                            <div class="reading-icon">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="reading-text">
+                                <div class="reading-title">Psalms & Proverbs</div>
+                                <div class="reading-reference">Psalm 1:1-6</div>
+                                <div class="reading-time">3 min reading time</div>
+                            </div>
+                        </div>
+                        <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
+                    </div>
+                    <div class="reading-actions">
+                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                    </div>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">42</div>
+                        <div class="stat-label">Total Readings</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">80%</div>
+                        <div class="stat-label">This Week</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="showScreen('home-screen')">
+                    <i class="fas fa-home"></i>
+                    <div class="nav-label">Home</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('calendar-screen')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="nav-label">Calendar</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('community-screen')">
+                    <i class="fas fa-users"></i>
+                    <div class="nav-label">Community</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('settings-screen')">
+                    <i class="fas fa-cog"></i>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bible Reader Screen -->
+        <div id="reader-screen" class="screen">
+            <div class="reader-header">
+                <i class="fas fa-arrow-left" onclick="showScreen('home-screen')"></i>
+                <div class="reader-title">Genesis 1:1-31</div>
+                <i class="fas fa-font"></i>
+            </div>
+            
+            <div class="main-content">
+                <div class="reader-content">
+                    <div class="chapter-number">1</div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">1</span>
+                        <span class="verse-text">In the beginning God created the heaven and the earth.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">2</span>
+                        <span class="verse-text">And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">3</span>
+                        <span class="verse-text">And God said, Let there be light: and there was light.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">4</span>
+                        <span class="verse-text">And God saw the light, that it was good: and God divided the light from the darkness.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">5</span>
+                        <span class="verse-text">And God called the light Day, and the darkness he called Night. And the evening and the morning were the first day.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">6</span>
+                        <span class="verse-text">And God said, Let there be a firmament in the midst of the waters, and let it divide the waters from the waters.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">7</span>
+                        <span class="verse-text">And God made the firmament, and divided the waters which were under the firmament from the waters which were above the firmament: and it was so.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">8</span>
+                        <span class="verse-text">And God called the firmament Heaven. And the evening and the morning were the second day.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">9</span>
+                        <span class="verse-text">And God said, Let the waters under the heaven be gathered together unto one place, and let the dry land appear: and it was so.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">10</span>
+                        <span class="verse-text">And God called the dry land Earth; and the gathering together of the waters called he Seas: and God saw that it was good.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reader-footer">
+                <button class="btn btn-success" onclick="markComplete()">
+                    <i class="fas fa-check"></i> Mark Complete
+                </button>
+            </div>
+        </div>
+        
+        <!-- Calendar Screen -->
+        <div id="calendar-screen" class="screen">
+            <div class="header">
+                <div class="header-left">
+                    <div class="greeting">Calendar</div>
+                    <div class="user-name">Bible Reading Plan</div>
+                </div>
+                <div class="avatar">S</div>
+            </div>
+            
+            <div class="main-content">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <i class="fas fa-chevron-left"></i>
+                        <div class="calendar-title">March 2025</div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">Su</div>
+                        <div class="calendar-day-header">Mo</div>
+                        <div class="calendar-day-header">Tu</div>
+                        <div class="calendar-day-header">We</div>
+                        <div class="calendar-day-header">Th</div>
+                        <div class="calendar-day-header">Fr</div>
+                        <div class="calendar-day-header">Sa</div>
+                        
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">1</div>
+                        
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day">5</div>
+                        <div class="calendar-day">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                        
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day completed">13</div>
+                        <div class="calendar-day completed">14</div>
+                        <div class="calendar-day completed">15</div>
+                        
+                        <div class="calendar-day completed">16</div>
+                        <div class="calendar-day completed">17</div>
+                        <div class="calendar-day completed">18</div>
+                        <div class="calendar-day today selected">19</div>
+                        <div class="calendar-day partial">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day">31</div>
+                        <div class="calendar-day">1</div>
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day">5</div>
+                    </div>
+                </div>
+                
+                <div class="date-info-card">
+                    <div class="date-title">Wednesday, March 19, 2025</div>
+                </div>
+                
+                <div class="reading-card completed">
+                    <div class="reading-content">
+                        <div class="reading-left">
+                            <div class="reading-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="reading-text">
+                                <div class="reading-title">Old Testament</div>
+                                <div class="reading-reference">Genesis 1:1-31</div>
+                                <div class="reading-time">10 min reading time</div>
+                            </div>
+                        </div>
+                        <div class="reading-checkbox checked">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="reading-actions">
+                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                    </div>
+                </div>
+                
+                <div class="reading-card">
+                    <div class="reading-content">
+                        <div class="reading-left">
+                            <div class="reading-icon">
+                                <i class="fas fa-cross"></i>
+                            </div>
+                            <div class="reading-text">
+                                <div class="reading-title">New Testament</div>
+                                <div class="reading-reference">Matthew 1:1-25</div>
+                                <div class="reading-time">5 min reading time</div>
+                            </div>
+                        </div>
+                        <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
+                    </div>
+                    <div class="reading-actions">
+                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                    </div>
+                </div>
+                
+                <div class="reading-card">
+                    <div class="reading-content">
+                        <div class="reading-left">
+                            <div class="reading-icon">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="reading-text">
+                                <div class="reading-title">Psalms & Proverbs</div>
+                                <div class="reading-reference">Psalm 1:1-6</div>
+                                <div class="reading-time">3 min reading time</div>
+                            </div>
+                        </div>
+                        <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
+                    </div>
+                    <div class="reading-actions">
+                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="showScreen('home-screen')">
+                    <i class="fas fa-home"></i>
+                    <div class="nav-label">Home</div>
+                </div>
+                <div class="nav-item active" onclick="showScreen('calendar-screen')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="nav-label">Calendar</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('community-screen')">
+                    <i class="fas fa-users"></i>
+                    <div class="nav-label">Community</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('settings-screen')">
+                    <i class="fas fa-cog"></i>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Community Screen -->
+        <div id="community-screen" class="screen">
+            <div class="header">
+                <div class="header-left">
+                    <div class="greeting">Community</div>
+                    <div class="user-name">Connect with Others</div>
+                </div>
+                <div class="avatar">S</div>
+            </div>
+            
+            <div class="main-content">
+                <div class="tab-header">
+                    <div class="tab active" onclick="activateTab(this, 'friends-tab')">Friends</div>
+                    <div class="tab" onclick="activateTab(this, 'leaderboard-tab')">Leaderboard</div>
+                    <div class="tab" onclick="activateTab(this, 'invitations-tab')">Invitations</div>
+                </div>
+                
+                <div id="friends-tab" class="tab-content active">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="search-input" placeholder="Search friends">
+                    </div>
+                    
+                    <div class="friend-list">
+                        <div class="friend-item">
+                            <div class="friend-avatar">J</div>
+                            <div class="friend-info">
+                                <div class="friend-name">John Smith</div>
+                                <div class="friend-stats">54 readings • 12 day streak</div>
+                            </div>
+                        </div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar">M</div>
+                            <div class="friend-info">
+                                <div class="friend-name">Mary Johnson</div>
+                                <div class="friend-stats">78 readings • 25 day streak</div>
+                            </div>
+                        </div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar">D</div>
+                            <div class="friend-info">
+                                <div class="friend-name">David Wilson</div>
+                                <div class="friend-stats">32 readings • 3 day streak</div>
+                            </div>
+                        </div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar">L</div>
+                            <div class="friend-info">
+                                <div class="friend-name">Linda Brown</div>
+                                <div class="friend-stats">65 readings • 8 day streak</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="add-friend-btn">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+                
+                <div id="leaderboard-tab" class="tab-content">
+                    <div class="friend-list">
+                        <div class="friend-item">
+                            <div class="friend-avatar">M</div>
+                            <div class="friend-info">
+                                <div class="friend-name">Mary Johnson</div>
+                                <div class="friend-stats">78 readings • 25 day streak</div>
+                            </div>
+                        </div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar">L</div>
+                            <div class="friend-info">
+                                <div class="friend-name">Linda Brown</div>
+                                <div class="friend-stats">65 readings • 8 day streak</div>
+                            </div>
+                        </div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar">J</div>
+                            <div class="friend-info">
+                                <div class="friend-name">John Smith</div>
+                                <div class="friend-stats">54 readings • 12 day streak</div>
+                            </div>
+                        </div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar">S</div>
+                            <div class="friend-info">
+                                <div class="friend-name">Sarah (You)</div>
+                                <div class="friend-stats">42 readings • 7 day streak</div>
+                            </div>
+                        </div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar">D</div>
+                            <div class="friend-info">
+                                <div class="friend-name">David Wilson</div>
+                                <div class="friend-stats">32 readings • 3 day streak</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="invitations-tab" class="tab-content">
+                    <div class="search-bar">
+                        <i class="fas fa-envelope"></i>
+                        <input type="text" class="search-input" placeholder="Email to invite">
+                    </div>
+                    
+                    <div style="margin: 16px; text-align: right;">
+                        <button class="btn btn-primary">Send Invitation</button>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <div class="settings-header">Pending Invitations</div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar"><i class="fas fa-envelope"></i></div>
+                            <div class="friend-info">
+                                <div class="friend-name">michael@example.com</div>
+                                <div class="friend-stats">Sent on March 15, 2025</div>
+                            </div>
+                        </div>
+                        
+                        <div class="friend-item">
+                            <div class="friend-avatar"><i class="fas fa-envelope"></i></div>
+                            <div class="friend-info">
+                                <div class="friend-name">robert@example.com</div>
+                                <div class="friend-stats">Sent on March 12, 2025</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="showScreen('home-screen')">
+                    <i class="fas fa-home"></i>
+                    <div class="nav-label">Home</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('calendar-screen')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="nav-label">Calendar</div>
+                </div>
+                <div class="nav-item active" onclick="showScreen('community-screen')">
+                    <i class="fas fa-users"></i>
+                    <div class="nav-label">Community</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('settings-screen')">
+                    <i class="fas fa-cog"></i>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Screen -->
+        <div id="settings-screen" class="screen">
+            <div class="header">
+                <div class="header-left">
+                    <div class="greeting">Settings</div>
+                    <div class="user-name">Customize Your Experience</div>
+                </div>
+                <div class="avatar">S</div>
+            </div>
+            
+            <div class="main-content">
+                <div class="settings-group">
+                    <div class="settings-header">Account</div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div class="settings-text">Display Name</div>
+                                <div class="settings-description">Sarah</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <div class="settings-text">Email Address</div>
+                                <div class="settings-description">sarah@example.com</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="settings-text">Change Password</div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-header">Notifications</div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="settings-text">Daily Reminder</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <div class="settings-text">Reminder Time</div>
+                                <div class="settings-description">8:00 AM</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="settings-text">Friend Activity</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-header">Appearance</div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div class="settings-text">Dark Mode</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-font"></i>
+                            </div>
+                            <div class="settings-text">Text Size</div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-header">About</div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div>
+                                <div class="settings-text">App Version</div>
+                                <div class="settings-description">1.0.0</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="settings-text">Help & Support</div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </div>
+                            <div class="settings-text">Sign Out</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bottom-nav">
+                <div class="nav-item" onclick="showScreen('home-screen')">
+                    <i class="fas fa-home"></i>
+                    <div class="nav-label">Home</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('calendar-screen')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="nav-label">Calendar</div>
+                </div>
+                <div class="nav-item" onclick="showScreen('community-screen')">
+                    <i class="fas fa-users"></i>
+                    <div class="nav-label">Community</div>
+                </div>
+                <div class="nav-item active" onclick="showScreen('settings-screen')">
+                    <i class="fas fa-cog"></i>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Calculate and set progress circle
+        function setProgressCircle(percentage) {
+            const circle = document.querySelector('.progress-circle-fill');
+            const radius = 36;
+            const circumference = 2 * Math.PI * radius;
+            
+            const fillPercentage = (percentage / 100) * circumference;
+            const emptyPercentage = circumference - fillPercentage;
+            
+            circle.style.strokeDasharray = `${fillPercentage} ${emptyPercentage}`;
+        }
+        
+        // Initialize with 33% (1/3) completion
+        setProgressCircle(33);
+        
+        // Show a specific screen
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenId).classList.add('active');
+            
+            // Update bottom nav
+            updateBottomNav(screenId);
+        }
+        
+        // Update bottom navigation active state
+        function updateBottomNav(activeScreenId) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to the corresponding nav item
+            let navIndex = 0;
+            
+            switch(activeScreenId) {
+                case 'home-screen': navIndex = 0; break;
+                case 'calendar-screen': navIndex = 1; break;
+                case 'community-screen': navIndex = 2; break;
+                case 'settings-screen': navIndex = 3; break;
+                default: navIndex = 0;
+            }
+            
+            document.querySelectorAll('.bottom-nav .nav-item')[navIndex].classList.add('active');
+        }
+        
+        // Toggle checkbox state
+        function toggleCheckbox(checkbox) {
+            checkbox.classList.toggle('checked');
+            
+            if (checkbox.classList.contains('checked')) {
+                checkbox.innerHTML = '<i class="fas fa-check"></i>';
+                
+                // Update progress if this is on the home screen
+                if (document.getElementById('home-screen').classList.contains('active')) {
+                    updateProgress();
+                }
+            } else {
+                checkbox.innerHTML = '';
+                
+                // Update progress if this is on the home screen
+                if (document.getElementById('home-screen').classList.contains('active')) {
+                    updateProgress();
+                }
+            }
+        }
+        
+        // Mark a reading as complete from the reader screen
+        function markComplete() {
+            showScreen('home-screen');
+            
+            // Find the first unchecked checkbox and check it
+            const checkboxes = document.querySelectorAll('#home-screen .reading-checkbox:not(.checked)');
+            if (checkboxes.length > 0) {
+                toggleCheckbox(checkboxes[0]);
+            }
+        }
+        
+        // Update progress based on checked readings
+        function updateProgress() {
+            const total = 3;
+            const completed = document.querySelectorAll('#home-screen .reading-checkbox.checked').length;
+            
+            // Update circle
+            setProgressCircle((completed / total) * 100);
+            
+            // Update text
+            document.querySelector('.progress-circle > div').textContent = `${completed}/${total}`;
+            
+            // Update subtitle
+            const subtitle = document.querySelector('.progress-subtitle');
+            if (completed === 0) {
+                subtitle.textContent = "Start your daily readings";
+            } else if (completed === total) {
+                subtitle.textContent = "Great job! All readings complete.";
+            } else {
+                subtitle.textContent = `${completed}/${total} readings completed`;
+            }
+        }
+        
+        // Activate a tab in the community screen
+        function activateTab(tabElement, tabContentId) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to the clicked tab
+            tabElement.classList.add('active');
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show the selected tab content
+            document.getElementById(tabContentId).classList.add('active');
+        }
+        
+        // Initialize tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+            if (!content.id.includes('friends-tab')) {
+                content.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
