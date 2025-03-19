@@ -287,6 +287,7 @@
             align-items: center;
             padding: 8px 0;
             cursor: pointer;
+            flex: 1;
         }
 
         .nav-item i {
@@ -490,107 +491,6 @@
             animation: fadeIn 0.3s ease;
         }
         
-        /* Community Screen Styles */
-        .tab-header {
-            display: flex;
-            background-color: white;
-            margin-bottom: 16px;
-        }
-        
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 16px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-        
-        .tab.active {
-            border-bottom: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        
-        .search-bar {
-            margin: 16px;
-            padding: 12px 16px;
-            background-color: white;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .search-bar i {
-            color: var(--text-medium);
-            margin-right: 8px;
-        }
-        
-        .search-input {
-            border: none;
-            flex: 1;
-            font-size: 16px;
-            outline: none;
-        }
-        
-        .friend-list {
-            margin: 0 16px;
-        }
-        
-        .friend-item {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            background-color: white;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .friend-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: bold;
-        }
-        
-        .friend-info {
-            flex: 1;
-        }
-        
-        .friend-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .friend-stats {
-            font-size: 14px;
-            color: var(--text-medium);
-        }
-        
-        .add-friend-btn {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            z-index: 10;
-        }
-        
         /* Settings Screen Styles */
         .settings-group {
             margin: 16px;
@@ -734,7 +634,7 @@
                         </div>
                     </div>
                     <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                        <button class="btn btn-primary" onclick="showReaderScreen('genesis-reader')">Read Now</button>
                     </div>
                 </div>
                 
@@ -753,7 +653,7 @@
                         <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
                     </div>
                     <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                        <button class="btn btn-primary" onclick="showReaderScreen('matthew-reader')">Read Now</button>
                     </div>
                 </div>
                 
@@ -772,7 +672,7 @@
                         <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
                     </div>
                     <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                        <button class="btn btn-primary" onclick="showReaderScreen('psalm-reader')">Read Now</button>
                     </div>
                 </div>
                 
@@ -801,10 +701,6 @@
                     <i class="fas fa-calendar-alt"></i>
                     <div class="nav-label">Calendar</div>
                 </div>
-                <div class="nav-item" onclick="showScreen('community-screen')">
-                    <i class="fas fa-users"></i>
-                    <div class="nav-label">Community</div>
-                </div>
                 <div class="nav-item" onclick="showScreen('settings-screen')">
                     <i class="fas fa-cog"></i>
                     <div class="nav-label">Settings</div>
@@ -812,8 +708,8 @@
             </div>
         </div>
         
-        <!-- Bible Reader Screen -->
-        <div id="reader-screen" class="screen">
+        <!-- Genesis Reader Screen -->
+        <div id="genesis-reader" class="screen">
             <div class="reader-header">
                 <i class="fas fa-arrow-left" onclick="showScreen('home-screen')"></i>
                 <div class="reader-title">Genesis 1:1-31</div>
@@ -877,7 +773,129 @@
             </div>
             
             <div class="reader-footer">
-                <button class="btn btn-success" onclick="markComplete()">
+                <button class="btn btn-success" onclick="markComplete(0)">
+                    <i class="fas fa-check"></i> Mark Complete
+                </button>
+            </div>
+        </div>
+        
+        <!-- Matthew Reader Screen -->
+        <div id="matthew-reader" class="screen">
+            <div class="reader-header">
+                <i class="fas fa-arrow-left" onclick="showScreen('home-screen')"></i>
+                <div class="reader-title">Matthew 1:1-25</div>
+                <i class="fas fa-font"></i>
+            </div>
+            
+            <div class="main-content">
+                <div class="reader-content">
+                    <div class="chapter-number">1</div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">1</span>
+                        <span class="verse-text">The book of the generation of Jesus Christ, the son of David, the son of Abraham.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">2</span>
+                        <span class="verse-text">Abraham begat Isaac; and Isaac begat Jacob; and Jacob begat Judas and his brethren;</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">3</span>
+                        <span class="verse-text">And Judas begat Phares and Zara of Thamar; and Phares begat Esrom; and Esrom begat Aram;</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">4</span>
+                        <span class="verse-text">And Aram begat Aminadab; and Aminadab begat Naasson; and Naasson begat Salmon;</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">5</span>
+                        <span class="verse-text">And Salmon begat Booz of Rachab; and Booz begat Obed of Ruth; and Obed begat Jesse;</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">6</span>
+                        <span class="verse-text">And Jesse begat David the king; and David the king begat Solomon of her that had been the wife of Urias;</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">7</span>
+                        <span class="verse-text">And Solomon begat Roboam; and Roboam begat Abia; and Abia begat Asa;</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">8</span>
+                        <span class="verse-text">And Asa begat Josaphat; and Josaphat begat Joram; and Joram begat Ozias;</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">9</span>
+                        <span class="verse-text">And Ozias begat Joatham; and Joatham begat Achaz; and Achaz begat Ezekias;</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">10</span>
+                        <span class="verse-text">And Ezekias begat Manasses; and Manasses begat Amon; and Amon begat Josias;</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reader-footer">
+                <button class="btn btn-success" onclick="markComplete(1)">
+                    <i class="fas fa-check"></i> Mark Complete
+                </button>
+            </div>
+        </div>
+        
+        <!-- Psalm Reader Screen -->
+        <div id="psalm-reader" class="screen">
+            <div class="reader-header">
+                <i class="fas fa-arrow-left" onclick="showScreen('home-screen')"></i>
+                <div class="reader-title">Psalm 1:1-6</div>
+                <i class="fas fa-font"></i>
+            </div>
+            
+            <div class="main-content">
+                <div class="reader-content">
+                    <div class="chapter-number">1</div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">1</span>
+                        <span class="verse-text">Blessed is the man that walketh not in the counsel of the ungodly, nor standeth in the way of sinners, nor sitteth in the seat of the scornful.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">2</span>
+                        <span class="verse-text">But his delight is in the law of the LORD; and in his law doth he meditate day and night.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">3</span>
+                        <span class="verse-text">And he shall be like a tree planted by the rivers of water, that bringeth forth his fruit in his season; his leaf also shall not wither; and whatsoever he doeth shall prosper.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">4</span>
+                        <span class="verse-text">The ungodly are not so: but are like the chaff which the wind driveth away.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">5</span>
+                        <span class="verse-text">Therefore the ungodly shall not stand in the judgment, nor sinners in the congregation of the righteous.</span>
+                    </div>
+                    
+                    <div class="verse-wrapper">
+                        <span class="verse-number">6</span>
+                        <span class="verse-text">For the LORD knoweth the way of the righteous: but the way of the ungodly shall perish.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reader-footer">
+                <button class="btn btn-success" onclick="markComplete(2)">
                     <i class="fas fa-check"></i> Mark Complete
                 </button>
             </div>
@@ -981,7 +999,7 @@
                         </div>
                     </div>
                     <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                        <button class="btn btn-primary" onclick="showReaderScreen('genesis-reader')">Read Now</button>
                     </div>
                 </div>
                 
@@ -1000,7 +1018,7 @@
                         <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
                     </div>
                     <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                        <button class="btn btn-primary" onclick="showReaderScreen('matthew-reader')">Read Now</button>
                     </div>
                 </div>
                 
@@ -1019,7 +1037,7 @@
                         <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
                     </div>
                     <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showScreen('reader-screen')">Read Now</button>
+                        <button class="btn btn-primary" onclick="showReaderScreen('psalm-reader')">Read Now</button>
                     </div>
                 </div>
             </div>
@@ -1032,168 +1050,6 @@
                 <div class="nav-item active" onclick="showScreen('calendar-screen')">
                     <i class="fas fa-calendar-alt"></i>
                     <div class="nav-label">Calendar</div>
-                </div>
-                <div class="nav-item" onclick="showScreen('community-screen')">
-                    <i class="fas fa-users"></i>
-                    <div class="nav-label">Community</div>
-                </div>
-                <div class="nav-item" onclick="showScreen('settings-screen')">
-                    <i class="fas fa-cog"></i>
-                    <div class="nav-label">Settings</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Community Screen -->
-        <div id="community-screen" class="screen">
-            <div class="header">
-                <div class="header-left">
-                    <div class="greeting">Community</div>
-                    <div class="user-name">Connect with Others</div>
-                </div>
-                <div class="avatar">S</div>
-            </div>
-            
-            <div class="main-content">
-                <div class="tab-header">
-                    <div class="tab active" onclick="activateTab(this, 'friends-tab')">Friends</div>
-                    <div class="tab" onclick="activateTab(this, 'leaderboard-tab')">Leaderboard</div>
-                    <div class="tab" onclick="activateTab(this, 'invitations-tab')">Invitations</div>
-                </div>
-                
-                <div id="friends-tab" class="tab-content active">
-                    <div class="search-bar">
-                        <i class="fas fa-search"></i>
-                        <input type="text" class="search-input" placeholder="Search friends">
-                    </div>
-                    
-                    <div class="friend-list">
-                        <div class="friend-item">
-                            <div class="friend-avatar">J</div>
-                            <div class="friend-info">
-                                <div class="friend-name">John Smith</div>
-                                <div class="friend-stats">54 readings • 12 day streak</div>
-                            </div>
-                        </div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar">M</div>
-                            <div class="friend-info">
-                                <div class="friend-name">Mary Johnson</div>
-                                <div class="friend-stats">78 readings • 25 day streak</div>
-                            </div>
-                        </div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar">D</div>
-                            <div class="friend-info">
-                                <div class="friend-name">David Wilson</div>
-                                <div class="friend-stats">32 readings • 3 day streak</div>
-                            </div>
-                        </div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar">L</div>
-                            <div class="friend-info">
-                                <div class="friend-name">Linda Brown</div>
-                                <div class="friend-stats">65 readings • 8 day streak</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="add-friend-btn">
-                        <i class="fas fa-plus"></i>
-                    </div>
-                </div>
-                
-                <div id="leaderboard-tab" class="tab-content">
-                    <div class="friend-list">
-                        <div class="friend-item">
-                            <div class="friend-avatar">M</div>
-                            <div class="friend-info">
-                                <div class="friend-name">Mary Johnson</div>
-                                <div class="friend-stats">78 readings • 25 day streak</div>
-                            </div>
-                        </div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar">L</div>
-                            <div class="friend-info">
-                                <div class="friend-name">Linda Brown</div>
-                                <div class="friend-stats">65 readings • 8 day streak</div>
-                            </div>
-                        </div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar">J</div>
-                            <div class="friend-info">
-                                <div class="friend-name">John Smith</div>
-                                <div class="friend-stats">54 readings • 12 day streak</div>
-                            </div>
-                        </div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar">S</div>
-                            <div class="friend-info">
-                                <div class="friend-name">Sarah (You)</div>
-                                <div class="friend-stats">42 readings • 7 day streak</div>
-                            </div>
-                        </div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar">D</div>
-                            <div class="friend-info">
-                                <div class="friend-name">David Wilson</div>
-                                <div class="friend-stats">32 readings • 3 day streak</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="invitations-tab" class="tab-content">
-                    <div class="search-bar">
-                        <i class="fas fa-envelope"></i>
-                        <input type="text" class="search-input" placeholder="Email to invite">
-                    </div>
-                    
-                    <div style="margin: 16px; text-align: right;">
-                        <button class="btn btn-primary">Send Invitation</button>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <div class="settings-header">Pending Invitations</div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar"><i class="fas fa-envelope"></i></div>
-                            <div class="friend-info">
-                                <div class="friend-name">michael@example.com</div>
-                                <div class="friend-stats">Sent on March 15, 2025</div>
-                            </div>
-                        </div>
-                        
-                        <div class="friend-item">
-                            <div class="friend-avatar"><i class="fas fa-envelope"></i></div>
-                            <div class="friend-info">
-                                <div class="friend-name">robert@example.com</div>
-                                <div class="friend-stats">Sent on March 12, 2025</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bottom-nav">
-                <div class="nav-item" onclick="showScreen('home-screen')">
-                    <i class="fas fa-home"></i>
-                    <div class="nav-label">Home</div>
-                </div>
-                <div class="nav-item" onclick="showScreen('calendar-screen')">
-                    <i class="fas fa-calendar-alt"></i>
-                    <div class="nav-label">Calendar</div>
-                </div>
-                <div class="nav-item active" onclick="showScreen('community-screen')">
-                    <i class="fas fa-users"></i>
-                    <div class="nav-label">Community</div>
                 </div>
                 <div class="nav-item" onclick="showScreen('settings-screen')">
                     <i class="fas fa-cog"></i>
@@ -1281,19 +1137,6 @@
                         </div>
                         <i class="fas fa-chevron-right"></i>
                     </div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-left">
-                            <div class="settings-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="settings-text">Friend Activity</div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
                 </div>
                 
                 <div class="settings-group">
@@ -1368,10 +1211,6 @@
                     <i class="fas fa-calendar-alt"></i>
                     <div class="nav-label">Calendar</div>
                 </div>
-                <div class="nav-item" onclick="showScreen('community-screen')">
-                    <i class="fas fa-users"></i>
-                    <div class="nav-label">Community</div>
-                </div>
                 <div class="nav-item active" onclick="showScreen('settings-screen')">
                     <i class="fas fa-cog"></i>
                     <div class="nav-label">Settings</div>
@@ -1410,6 +1249,17 @@
             updateBottomNav(screenId);
         }
         
+        // Show a specific reader screen
+        function showReaderScreen(readerId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show selected reader screen
+            document.getElementById(readerId).classList.add('active');
+        }
+        
         // Update bottom navigation active state
         function updateBottomNav(activeScreenId) {
             // Remove active class from all nav items
@@ -1423,8 +1273,7 @@
             switch(activeScreenId) {
                 case 'home-screen': navIndex = 0; break;
                 case 'calendar-screen': navIndex = 1; break;
-                case 'community-screen': navIndex = 2; break;
-                case 'settings-screen': navIndex = 3; break;
+                case 'settings-screen': navIndex = 2; break;
                 default: navIndex = 0;
             }
             
@@ -1453,13 +1302,13 @@
         }
         
         // Mark a reading as complete from the reader screen
-        function markComplete() {
+        function markComplete(readingIndex) {
             showScreen('home-screen');
             
-            // Find the first unchecked checkbox and check it
-            const checkboxes = document.querySelectorAll('#home-screen .reading-checkbox:not(.checked)');
-            if (checkboxes.length > 0) {
-                toggleCheckbox(checkboxes[0]);
+            // Target the specific reading based on index
+            const checkboxes = document.querySelectorAll('#home-screen .reading-card .reading-checkbox');
+            if (checkboxes[readingIndex] && !checkboxes[readingIndex].classList.contains('checked')) {
+                toggleCheckbox(checkboxes[readingIndex]);
             }
         }
         
@@ -1484,32 +1333,6 @@
                 subtitle.textContent = `${completed}/${total} readings completed`;
             }
         }
-        
-        // Activate a tab in the community screen
-        function activateTab(tabElement, tabContentId) {
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Add active class to the clicked tab
-            tabElement.classList.add('active');
-            
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Show the selected tab content
-            document.getElementById(tabContentId).classList.add('active');
-        }
-        
-        // Initialize tab contents
-        document.querySelectorAll('.tab-content').forEach(content => {
-            if (!content.id.includes('friends-tab')) {
-                content.classList.remove('active');
-            }
-        });
     </script>
 </body>
 </html>
