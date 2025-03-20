@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Bible Reader</title>
+    <title>Daily Bible Reader - Full Year Plan</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap');
@@ -422,6 +422,15 @@
             border-radius: 50%;
             position: relative;
             cursor: pointer;
+            font-size: 14px;
+        }
+
+        .calendar-day.active-month {
+            color: var(--text-dark);
+        }
+        
+        .calendar-day.inactive-month {
+            color: #ccc;
         }
 
         .calendar-day.today {
@@ -431,7 +440,7 @@
 
         .calendar-day.selected {
             background-color: var(--primary-color);
-            color: white;
+            color: white !important;
         }
 
         .calendar-day.completed {
@@ -585,6 +594,113 @@
         input:checked + .toggle-slider:before {
             transform: translateX(26px);
         }
+
+        /* Date picker styles */
+        .date-picker {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .date-picker select {
+            padding: 8px;
+            margin: 0 4px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            width: 80%;
+            max-width: 300px;
+        }
+        
+        /* Navigation buttons in the calendar */
+        .calendar-nav-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        /* No readings message */
+        .no-readings {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-medium);
+        }
+
+        /* User info form in settings */
+        .settings-input {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        /* Monthly progress styles */
+        .month-progress {
+            padding: 10px 16px;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            margin: 0 16px 16px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .month-progress-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-medium);
+        }
+
+        .month-progress-bar {
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .month-progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .month-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-medium);
+        }
+
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-medium);
+        }
+
+        .loading-indicator i {
+            margin-right: 8px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* External link button styling */
+        .external-link-btn {
+            background-color: #f0f0f0;
+            color: var(--text-dark);
+            border: 1px solid #ddd;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -593,101 +709,66 @@
         <div id="home-screen" class="screen active">
             <div class="header">
                 <div class="header-left">
-                    <div class="greeting">Good morning,</div>
-                    <div class="user-name">Sarah</div>
-                    <div class="date">Wednesday, March 19</div>
+                    <div class="greeting" id="greeting-text">Good morning,</div>
+                    <div class="user-name" id="user-name-display">Reader</div>
+                    <div class="date" id="current-date"></div>
                 </div>
-                <div class="avatar">S</div>
+                <div class="avatar" id="user-avatar">R</div>
             </div>
             
             <div class="main-content">
+                <div class="date-picker">
+                    <select id="day-selector" onchange="changeDate()">
+                        <!-- Will be populated by JavaScript -->
+                        <option value="loading">Loading reading plan...</option>
+                    </select>
+                </div>
+                
                 <div class="progress-card">
                     <div class="progress-content">
                         <div class="progress-circle">
                             <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
                                 <circle class="progress-circle-bg" cx="40" cy="40" r="36"></circle>
-                                <circle class="progress-circle-fill" cx="40" cy="40" r="36" stroke-dasharray="75.4 226.2"></circle>
+                                <circle class="progress-circle-fill" cx="40" cy="40" r="36" stroke-dasharray="0 226.2"></circle>
                             </svg>
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold;">1/3</div>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px; font-weight: bold;">0/3</div>
                         </div>
                         <div class="progress-text">
                             <div class="progress-title">Today's Readings</div>
-                            <div class="progress-subtitle">1/3 readings completed</div>
+                            <div class="progress-subtitle">Start your daily readings</div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="reading-card completed">
-                    <div class="reading-content">
-                        <div class="reading-left">
-                            <div class="reading-icon">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="reading-text">
-                                <div class="reading-title">Old Testament</div>
-                                <div class="reading-reference">Genesis 1:1-31</div>
-                                <div class="reading-time">10 min reading time</div>
-                            </div>
-                        </div>
-                        <div class="reading-checkbox checked">
-                            <i class="fas fa-check"></i>
-                        </div>
-                    </div>
-                    <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showReaderScreen('genesis-reader')">Read Now</button>
+                <div id="reading-container">
+                    <div class="loading-indicator">
+                        <i class="fas fa-spinner"></i> Loading readings...
                     </div>
                 </div>
                 
-                <div class="reading-card">
-                    <div class="reading-content">
-                        <div class="reading-left">
-                            <div class="reading-icon">
-                                <i class="fas fa-cross"></i>
-                            </div>
-                            <div class="reading-text">
-                                <div class="reading-title">New Testament</div>
-                                <div class="reading-reference">Matthew 1:1-25</div>
-                                <div class="reading-time">5 min reading time</div>
-                            </div>
-                        </div>
-                        <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
+                <div class="month-progress">
+                    <div class="month-progress-title">March Progress</div>
+                    <div class="month-progress-bar">
+                        <div class="month-progress-fill" style="width: 0%"></div>
                     </div>
-                    <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showReaderScreen('matthew-reader')">Read Now</button>
-                    </div>
-                </div>
-                
-                <div class="reading-card">
-                    <div class="reading-content">
-                        <div class="reading-left">
-                            <div class="reading-icon">
-                                <i class="fas fa-music"></i>
-                            </div>
-                            <div class="reading-text">
-                                <div class="reading-title">Psalms & Proverbs</div>
-                                <div class="reading-reference">Psalm 1:1-6</div>
-                                <div class="reading-time">3 min reading time</div>
-                            </div>
-                        </div>
-                        <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
-                    </div>
-                    <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showReaderScreen('psalm-reader')">Read Now</button>
+                    <div class="month-stats">
+                        <div class="month-completed">0 readings completed</div>
+                        <div class="month-total">0 of 0 readings (0%)</div>
                     </div>
                 </div>
                 
                 <div class="stats-container">
                     <div class="stat-item">
-                        <div class="stat-value">7</div>
+                        <div class="stat-value" id="streak-count">0</div>
                         <div class="stat-label">Day Streak</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value">42</div>
+                        <div class="stat-value" id="total-readings">0</div>
                         <div class="stat-label">Total Readings</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value">80%</div>
-                        <div class="stat-label">This Week</div>
+                        <div class="stat-value" id="completed-days">0</div>
+                        <div class="stat-label">Days Complete</div>
                     </div>
                 </div>
             </div>
@@ -708,194 +789,28 @@
             </div>
         </div>
         
-        <!-- Genesis Reader Screen -->
-        <div id="genesis-reader" class="screen">
+        <!-- Bible Reader Screen -->
+        <div id="reader-screen" class="screen">
             <div class="reader-header">
                 <i class="fas fa-arrow-left" onclick="showScreen('home-screen')"></i>
-                <div class="reader-title">Genesis 1:1-31</div>
+                <div class="reader-title" id="reader-title">Scripture Reference</div>
                 <i class="fas fa-font"></i>
             </div>
             
             <div class="main-content">
-                <div class="reader-content">
-                    <div class="chapter-number">1</div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">1</span>
-                        <span class="verse-text">In the beginning God created the heaven and the earth.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">2</span>
-                        <span class="verse-text">And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">3</span>
-                        <span class="verse-text">And God said, Let there be light: and there was light.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">4</span>
-                        <span class="verse-text">And God saw the light, that it was good: and God divided the light from the darkness.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">5</span>
-                        <span class="verse-text">And God called the light Day, and the darkness he called Night. And the evening and the morning were the first day.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">6</span>
-                        <span class="verse-text">And God said, Let there be a firmament in the midst of the waters, and let it divide the waters from the waters.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">7</span>
-                        <span class="verse-text">And God made the firmament, and divided the waters which were under the firmament from the waters which were above the firmament: and it was so.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">8</span>
-                        <span class="verse-text">And God called the firmament Heaven. And the evening and the morning were the second day.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">9</span>
-                        <span class="verse-text">And God said, Let the waters under the heaven be gathered together unto one place, and let the dry land appear: and it was so.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">10</span>
-                        <span class="verse-text">And God called the dry land Earth; and the gathering together of the waters called he Seas: and God saw that it was good.</span>
+                <div class="reader-content" id="reader-content">
+                    <!-- Scripture content will be loaded here by JavaScript -->
+                    <div class="loading-indicator">
+                        <i class="fas fa-spinner"></i> Loading scripture...
                     </div>
                 </div>
             </div>
             
             <div class="reader-footer">
-                <button class="btn btn-success" onclick="markComplete(0)">
-                    <i class="fas fa-check"></i> Mark Complete
+                <button class="btn external-link-btn" id="external-link-btn" onclick="openExternalBible()">
+                    <i class="fas fa-external-link-alt"></i> Open in Bible App
                 </button>
-            </div>
-        </div>
-        
-        <!-- Matthew Reader Screen -->
-        <div id="matthew-reader" class="screen">
-            <div class="reader-header">
-                <i class="fas fa-arrow-left" onclick="showScreen('home-screen')"></i>
-                <div class="reader-title">Matthew 1:1-25</div>
-                <i class="fas fa-font"></i>
-            </div>
-            
-            <div class="main-content">
-                <div class="reader-content">
-                    <div class="chapter-number">1</div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">1</span>
-                        <span class="verse-text">The book of the generation of Jesus Christ, the son of David, the son of Abraham.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">2</span>
-                        <span class="verse-text">Abraham begat Isaac; and Isaac begat Jacob; and Jacob begat Judas and his brethren;</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">3</span>
-                        <span class="verse-text">And Judas begat Phares and Zara of Thamar; and Phares begat Esrom; and Esrom begat Aram;</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">4</span>
-                        <span class="verse-text">And Aram begat Aminadab; and Aminadab begat Naasson; and Naasson begat Salmon;</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">5</span>
-                        <span class="verse-text">And Salmon begat Booz of Rachab; and Booz begat Obed of Ruth; and Obed begat Jesse;</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">6</span>
-                        <span class="verse-text">And Jesse begat David the king; and David the king begat Solomon of her that had been the wife of Urias;</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">7</span>
-                        <span class="verse-text">And Solomon begat Roboam; and Roboam begat Abia; and Abia begat Asa;</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">8</span>
-                        <span class="verse-text">And Asa begat Josaphat; and Josaphat begat Joram; and Joram begat Ozias;</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">9</span>
-                        <span class="verse-text">And Ozias begat Joatham; and Joatham begat Achaz; and Achaz begat Ezekias;</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">10</span>
-                        <span class="verse-text">And Ezekias begat Manasses; and Manasses begat Amon; and Amon begat Josias;</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="reader-footer">
-                <button class="btn btn-success" onclick="markComplete(1)">
-                    <i class="fas fa-check"></i> Mark Complete
-                </button>
-            </div>
-        </div>
-        
-        <!-- Psalm Reader Screen -->
-        <div id="psalm-reader" class="screen">
-            <div class="reader-header">
-                <i class="fas fa-arrow-left" onclick="showScreen('home-screen')"></i>
-                <div class="reader-title">Psalm 1:1-6</div>
-                <i class="fas fa-font"></i>
-            </div>
-            
-            <div class="main-content">
-                <div class="reader-content">
-                    <div class="chapter-number">1</div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">1</span>
-                        <span class="verse-text">Blessed is the man that walketh not in the counsel of the ungodly, nor standeth in the way of sinners, nor sitteth in the seat of the scornful.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">2</span>
-                        <span class="verse-text">But his delight is in the law of the LORD; and in his law doth he meditate day and night.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">3</span>
-                        <span class="verse-text">And he shall be like a tree planted by the rivers of water, that bringeth forth his fruit in his season; his leaf also shall not wither; and whatsoever he doeth shall prosper.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">4</span>
-                        <span class="verse-text">The ungodly are not so: but are like the chaff which the wind driveth away.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">5</span>
-                        <span class="verse-text">Therefore the ungodly shall not stand in the judgment, nor sinners in the congregation of the righteous.</span>
-                    </div>
-                    
-                    <div class="verse-wrapper">
-                        <span class="verse-number">6</span>
-                        <span class="verse-text">For the LORD knoweth the way of the righteous: but the way of the ungodly shall perish.</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="reader-footer">
-                <button class="btn btn-success" onclick="markComplete(2)">
+                <button class="btn btn-success" id="mark-complete-btn" onclick="markReaderComplete()">
                     <i class="fas fa-check"></i> Mark Complete
                 </button>
             </div>
@@ -908,136 +823,37 @@
                     <div class="greeting">Calendar</div>
                     <div class="user-name">Bible Reading Plan</div>
                 </div>
-                <div class="avatar">S</div>
+                <div class="avatar" id="calendar-user-avatar">R</div>
             </div>
             
             <div class="main-content">
                 <div class="calendar-container">
                     <div class="calendar-header">
-                        <i class="fas fa-chevron-left"></i>
-                        <div class="calendar-title">March 2025</div>
-                        <i class="fas fa-chevron-right"></i>
+                        <button class="calendar-nav-btn" onclick="changeMonth(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="calendar-title" id="calendar-month-title">March 2025</div>
+                        <button class="calendar-nav-btn" onclick="changeMonth(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                     
-                    <div class="calendar-grid">
-                        <div class="calendar-day-header">Su</div>
-                        <div class="calendar-day-header">Mo</div>
-                        <div class="calendar-day-header">Tu</div>
-                        <div class="calendar-day-header">We</div>
-                        <div class="calendar-day-header">Th</div>
-                        <div class="calendar-day-header">Fr</div>
-                        <div class="calendar-day-header">Sa</div>
-                        
-                        <div class="calendar-day">23</div>
-                        <div class="calendar-day">24</div>
-                        <div class="calendar-day">25</div>
-                        <div class="calendar-day">26</div>
-                        <div class="calendar-day">27</div>
-                        <div class="calendar-day">28</div>
-                        <div class="calendar-day">1</div>
-                        
-                        <div class="calendar-day">2</div>
-                        <div class="calendar-day">3</div>
-                        <div class="calendar-day">4</div>
-                        <div class="calendar-day">5</div>
-                        <div class="calendar-day">6</div>
-                        <div class="calendar-day">7</div>
-                        <div class="calendar-day">8</div>
-                        
-                        <div class="calendar-day">9</div>
-                        <div class="calendar-day">10</div>
-                        <div class="calendar-day">11</div>
-                        <div class="calendar-day">12</div>
-                        <div class="calendar-day completed">13</div>
-                        <div class="calendar-day completed">14</div>
-                        <div class="calendar-day completed">15</div>
-                        
-                        <div class="calendar-day completed">16</div>
-                        <div class="calendar-day completed">17</div>
-                        <div class="calendar-day completed">18</div>
-                        <div class="calendar-day today selected">19</div>
-                        <div class="calendar-day partial">20</div>
-                        <div class="calendar-day">21</div>
-                        <div class="calendar-day">22</div>
-                        
-                        <div class="calendar-day">23</div>
-                        <div class="calendar-day">24</div>
-                        <div class="calendar-day">25</div>
-                        <div class="calendar-day">26</div>
-                        <div class="calendar-day">27</div>
-                        <div class="calendar-day">28</div>
-                        <div class="calendar-day">29</div>
-                        
-                        <div class="calendar-day">30</div>
-                        <div class="calendar-day">31</div>
-                        <div class="calendar-day">1</div>
-                        <div class="calendar-day">2</div>
-                        <div class="calendar-day">3</div>
-                        <div class="calendar-day">4</div>
-                        <div class="calendar-day">5</div>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Calendar will be populated here by JavaScript -->
+                        <div class="loading-indicator">
+                            <i class="fas fa-spinner"></i> Loading calendar...
+                        </div>
                     </div>
                 </div>
                 
                 <div class="date-info-card">
-                    <div class="date-title">Wednesday, March 19, 2025</div>
+                    <div class="date-title" id="calendar-date-title">Monday, March 17, 2025</div>
                 </div>
                 
-                <div class="reading-card completed">
-                    <div class="reading-content">
-                        <div class="reading-left">
-                            <div class="reading-icon">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="reading-text">
-                                <div class="reading-title">Old Testament</div>
-                                <div class="reading-reference">Genesis 1:1-31</div>
-                                <div class="reading-time">10 min reading time</div>
-                            </div>
-                        </div>
-                        <div class="reading-checkbox checked">
-                            <i class="fas fa-check"></i>
-                        </div>
-                    </div>
-                    <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showReaderScreen('genesis-reader')">Read Now</button>
-                    </div>
-                </div>
-                
-                <div class="reading-card">
-                    <div class="reading-content">
-                        <div class="reading-left">
-                            <div class="reading-icon">
-                                <i class="fas fa-cross"></i>
-                            </div>
-                            <div class="reading-text">
-                                <div class="reading-title">New Testament</div>
-                                <div class="reading-reference">Matthew 1:1-25</div>
-                                <div class="reading-time">5 min reading time</div>
-                            </div>
-                        </div>
-                        <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
-                    </div>
-                    <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showReaderScreen('matthew-reader')">Read Now</button>
-                    </div>
-                </div>
-                
-                <div class="reading-card">
-                    <div class="reading-content">
-                        <div class="reading-left">
-                            <div class="reading-icon">
-                                <i class="fas fa-music"></i>
-                            </div>
-                            <div class="reading-text">
-                                <div class="reading-title">Psalms & Proverbs</div>
-                                <div class="reading-reference">Psalm 1:1-6</div>
-                                <div class="reading-time">3 min reading time</div>
-                            </div>
-                        </div>
-                        <div class="reading-checkbox" onclick="toggleCheckbox(this)"></div>
-                    </div>
-                    <div class="reading-actions">
-                        <button class="btn btn-primary" onclick="showReaderScreen('psalm-reader')">Read Now</button>
+                <div id="calendar-reading-container">
+                    <!-- Calendar readings will be populated here by JavaScript -->
+                    <div class="loading-indicator">
+                        <i class="fas fa-spinner"></i> Loading readings...
                     </div>
                 </div>
             </div>
@@ -1065,7 +881,7 @@
                     <div class="greeting">Settings</div>
                     <div class="user-name">Customize Your Experience</div>
                 </div>
-                <div class="avatar">S</div>
+                <div class="avatar" id="settings-user-avatar">R</div>
             </div>
             
             <div class="main-content">
@@ -1079,33 +895,10 @@
                             </div>
                             <div>
                                 <div class="settings-text">Display Name</div>
-                                <div class="settings-description">Sarah</div>
+                                <input type="text" id="display-name-input" class="settings-input" value="Reader" placeholder="Your name">
                             </div>
                         </div>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-left">
-                            <div class="settings-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div>
-                                <div class="settings-text">Email Address</div>
-                                <div class="settings-description">sarah@example.com</div>
-                            </div>
-                        </div>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-left">
-                            <div class="settings-icon">
-                                <i class="fas fa-lock"></i>
-                            </div>
-                            <div class="settings-text">Change Password</div>
-                        </div>
-                        <i class="fas fa-chevron-right"></i>
+                        <button id="save-profile" class="btn btn-primary" onclick="saveUserProfile()">Save</button>
                     </div>
                 </div>
                 
@@ -1120,7 +913,7 @@
                             <div class="settings-text">Daily Reminder</div>
                         </div>
                         <label class="toggle">
-                            <input type="checkbox" checked>
+                            <input type="checkbox" id="notifications-toggle" checked>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -1132,10 +925,10 @@
                             </div>
                             <div>
                                 <div class="settings-text">Reminder Time</div>
-                                <div class="settings-description">8:00 AM</div>
+                                <input type="time" id="reminder-time" class="settings-input" value="08:00">
                             </div>
                         </div>
-                        <i class="fas fa-chevron-right"></i>
+                        <button class="btn btn-primary" onclick="saveReminderSettings()">Save</button>
                     </div>
                 </div>
                 
@@ -1150,7 +943,7 @@
                             <div class="settings-text">Dark Mode</div>
                         </div>
                         <label class="toggle">
-                            <input type="checkbox">
+                            <input type="checkbox" id="dark-mode-toggle">
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -1162,7 +955,25 @@
                             </div>
                             <div class="settings-text">Text Size</div>
                         </div>
-                        <i class="fas fa-chevron-right"></i>
+                        <select id="text-size-selector" class="settings-input" style="width:auto; margin-top:0;">
+                            <option value="small">Small</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <div class="settings-header">Data Management</div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-left">
+                            <div class="settings-icon">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <div class="settings-text">Reset Reading Progress</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="resetProgress()">Reset</button>
                     </div>
                 </div>
                 
@@ -1178,25 +989,6 @@
                                 <div class="settings-text">App Version</div>
                                 <div class="settings-description">1.0.0</div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-left">
-                            <div class="settings-icon">
-                                <i class="fas fa-question-circle"></i>
-                            </div>
-                            <div class="settings-text">Help & Support</div>
-                        </div>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-left">
-                            <div class="settings-icon">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </div>
-                            <div class="settings-text">Sign Out</div>
                         </div>
                     </div>
                 </div>
@@ -1220,6 +1012,224 @@
     </div>
     
     <script>
+        // Bible reading plan data from JSON
+        const rawReadingPlanData = [
+            {
+              "Reading Day": 1,
+              "Short Date": "3/17/25",
+              "Long Date": "Monday, March 17, 2025",
+              "Date": "2025-03-17",
+              "Reading 1": "Genesis 1, Genesis 2:1-17",
+              "Reading 2": "Matthew 1:1-25",
+              "Reading 3": "Psalm 1:1-6"
+            },
+            {
+              "Reading Day": 2,
+              "Short Date": "3/18/25",
+              "Long Date": "Tuesday, March 18, 2025",
+              "Date": "2025-03-18",
+              "Reading 1": "Genesis 2:18-25, Genesis 3, Genesis 4:1-16",
+              "Reading 2": "Matthew 2:1-18",
+              "Reading 3": "Psalm 2:1-12"
+            },
+            {
+              "Reading Day": 3,
+              "Short Date": "3/19/25",
+              "Long Date": "Wednesday, March 19, 2025",
+              "Date": "2025-03-19",
+              "Reading 1": "Genesis 4:17-26, Genesis 5, Genesis 6",
+              "Reading 2": "Matthew 2:19-23, Matthew 3",
+              "Reading 3": "Psalm 3:1-8"
+            },
+            {
+              "Reading Day": 4,
+              "Short Date": "3/20/25",
+              "Long Date": "Thursday, March 20, 2025",
+              "Date": "2025-03-20",
+              "Reading 1": "Genesis 7, Genesis 8, Genesis 9:1-17",
+              "Reading 2": "Matthew 4:1-22",
+              "Reading 3": "Proverbs 1:1-7"
+            },
+            {
+              "Reading Day": 5,
+              "Short Date": "3/21/25",
+              "Long Date": "Friday, March 21, 2025",
+              "Date": "2025-03-21",
+              "Reading 1": "Genesis 9:18-29, Genesis 10, Genesis 11:1-9",
+              "Reading 2": "Matthew 4:23-25, Matthew 5:1-20",
+              "Reading 3": "Psalm 4:1-8"
+            },
+            {
+              "Reading Day": 6,
+              "Short Date": "3/22/25",
+              "Long Date": "Saturday, March 22, 2025",
+              "Date": "2025-03-22",
+              "Reading 1": "Genesis 11:10-32, Genesis 12, Genesis 13",
+              "Reading 2": "Matthew 5:21-42",
+              "Reading 3": "Psalm 5:1-12"
+            },
+            {
+              "Reading Day": 7,
+              "Short Date": "3/23/25",
+              "Long Date": "Sunday, March 23, 2025",
+              "Date": "2025-03-23",
+              "Reading 1": "Genesis 14, Genesis 15, Genesis 16",
+              "Reading 2": "Matthew 5:43-48, Matthew 6:1-24",
+              "Reading 3": "Psalm 6"
+            }
+            // In a real app, we'd have all 365 days loaded
+        ];
+        
+        // Sample verse content for demo (normally would come from a Bible API)
+        const sampleVerses = {
+            "Genesis 1": [
+                { number: 1, text: "In the beginning God created the heaven and the earth." },
+                { number: 2, text: "And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters." },
+                { number: 3, text: "And God said, Let there be light: and there was light." },
+                { number: 4, text: "And God saw the light, that it was good: and God divided the light from the darkness." },
+                { number: 5, text: "And God called the light Day, and the darkness he called Night. And the evening and the morning were the first day." }
+            ],
+            "Matthew 1": [
+                { number: 1, text: "The book of the generation of Jesus Christ, the son of David, the son of Abraham." },
+                { number: 2, text: "Abraham begat Isaac; and Isaac begat Jacob; and Jacob begat Judas and his brethren;" },
+                { number: 3, text: "And Judas begat Phares and Zara of Thamar; and Phares begat Esrom; and Esrom begat Aram;" }
+            ],
+            "Psalm 1": [
+                { number: 1, text: "Blessed is the man that walketh not in the counsel of the ungodly, nor standeth in the way of sinners, nor sitteth in the seat of the scornful." },
+                { number: 2, text: "But his delight is in the law of the LORD; and in his law doth he meditate day and night." },
+                { number: 3, text: "And he shall be like a tree planted by the rivers of water, that bringeth forth his fruit in his season; his leaf also shall not wither; and whatsoever he doeth shall prosper." }
+            ]
+        };
+        
+        // Convert raw reading plan data to the app format
+        const readingPlan = {};
+        rawReadingPlanData.forEach(day => {
+            const date = day.Date;
+            readingPlan[date] = {
+                date: day["Long Date"],
+                shortDate: day["Short Date"],
+                readingDay: day["Reading Day"],
+                readings: [
+                    {
+                        type: "oldTestament",
+                        title: "Old Testament",
+                        reference: day["Reading 1"],
+                        icon: "book",
+                        time: estimateReadingTime(day["Reading 1"]),
+                        completed: false
+                    },
+                    {
+                        type: "newTestament",
+                        title: "New Testament",
+                        reference: day["Reading 2"],
+                        icon: "cross",
+                        time: estimateReadingTime(day["Reading 2"]),
+                        completed: false
+                    },
+                    {
+                        type: "psalmsProverbs",
+                        title: "Psalms & Proverbs",
+                        reference: day["Reading 3"],
+                        icon: "music",
+                        time: estimateReadingTime(day["Reading 3"]),
+                        completed: false
+                    }
+                ]
+            };
+        });
+        
+        // App state
+        let currentDate = "2025-03-17"; // Default starting day
+        let currentMonth = 2; // March (0-based index)
+        let currentYear = 2025;
+        let currentReadingIndex = -1;
+        
+        // User stats
+        let userStats = {
+            streak: 0,
+            totalReadings: 0,
+            completedDays: 0
+        };
+        
+        // User settings
+        let userSettings = {
+            name: "Reader",
+            notificationsEnabled: true,
+            reminderTime: "08:00",
+            darkMode: false,
+            textSize: "medium"
+        };
+        
+        // Initialize the app when DOM content is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load user preferences
+            loadUserProfile();
+            
+            // Set current date in header
+            updateDateDisplay();
+            
+            // Initialize the day selector dropdown
+            initializeDaySelector();
+            
+            // Render initial readings and calendar
+            renderReadings('reading-container', currentDate);
+            renderCalendar();
+            
+            // Update progress indicators
+            updateProgress();
+            updateMonthProgress();
+        });
+        
+        // Helper function to estimate reading time based on reference length
+        function estimateReadingTime(reference) {
+            // Simple estimation - could be improved with actual verse counts
+            const commaCount = (reference.match(/,/g) || []).length;
+            const minutes = Math.max(3, commaCount + 3);
+            return `${minutes} min`;
+        }
+        
+        // Format the current date for display
+        function updateDateDisplay() {
+            const today = new Date();
+            document.getElementById('current-date').textContent = formatDate(today);
+            
+            // Set appropriate greeting based on time of day
+            const greeting = getTimeOfDayGreeting();
+            document.getElementById('greeting-text').textContent = greeting + ',';
+        }
+        
+        // Get time-of-day appropriate greeting
+        function getTimeOfDayGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'Good morning';
+            if (hour < 18) return 'Good afternoon';
+            return 'Good evening';
+        }
+        
+        // Format a date object to string
+        function formatDate(date) {
+            const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        // Initialize the day selector dropdown
+        function initializeDaySelector() {
+            const selector = document.getElementById('day-selector');
+            selector.innerHTML = '';
+            
+            // Add options for each day in the reading plan
+            Object.keys(readingPlan).forEach(date => {
+                const day = readingPlan[date];
+                const option = document.createElement('option');
+                option.value = date;
+                option.textContent = `Day ${day.readingDay}: ${day.shortDate}`;
+                if (date === currentDate) {
+                    option.selected = true;
+                }
+                selector.appendChild(option);
+            });
+        }
+        
         // Calculate and set progress circle
         function setProgressCircle(percentage) {
             const circle = document.querySelector('.progress-circle-fill');
@@ -1232,8 +1242,380 @@
             circle.style.strokeDasharray = `${fillPercentage} ${emptyPercentage}`;
         }
         
-        // Initialize with 33% (1/3) completion
-        setProgressCircle(33);
+        // Update progress based on completed readings
+        function updateProgress() {
+            const dayData = readingPlan[currentDate];
+            if (!dayData) return;
+            
+            const total = dayData.readings.length;
+            const completed = dayData.readings.filter(reading => reading.completed).length;
+            
+            // Update circle
+            setProgressCircle((completed / total) * 100);
+            
+            // Update text
+            document.querySelector('.progress-circle > div').textContent = `${completed}/${total}`;
+            
+            // Update subtitle
+            const subtitle = document.querySelector('.progress-subtitle');
+            if (completed === 0) {
+                subtitle.textContent = "Start your daily readings";
+            } else if (completed === total) {
+                subtitle.textContent = "Great job! All readings complete.";
+            } else {
+                subtitle.textContent = `${completed}/${total} readings completed`;
+            }
+            
+            // Update stats
+            updateStats();
+        }
+        
+        // Update monthly progress
+        function updateMonthProgress() {
+            // Count completed readings in the current month
+            let totalMonthReadings = 0;
+            let completedMonthReadings = 0;
+            
+            Object.keys(readingPlan).forEach(date => {
+                const day = readingPlan[date];
+                const dateObj = new Date(date);
+                if (dateObj.getMonth() === currentMonth && dateObj.getFullYear() === currentYear) {
+                    totalMonthReadings += day.readings.length;
+                    completedMonthReadings += day.readings.filter(reading => reading.completed).length;
+                }
+            });
+            
+            // Update progress bar
+            const progressPercentage = totalMonthReadings > 0 ? 
+                (completedMonthReadings / totalMonthReadings) * 100 : 0;
+            
+            document.querySelector('.month-progress-fill').style.width = `${progressPercentage}%`;
+            
+            // Update text
+            const monthTitle = document.querySelector('.month-progress-title');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                'July', 'August', 'September', 'October', 'November', 'December'];
+            monthTitle.textContent = `${monthNames[currentMonth]} Progress`;
+            
+            // Update stats
+            document.querySelector('.month-completed').textContent = 
+                `${completedMonthReadings} readings completed`;
+            
+            document.querySelector('.month-total').textContent = 
+                `${completedMonthReadings} of ${totalMonthReadings} readings (${Math.round(progressPercentage)}%)`;
+        }
+        
+        // Render the reading cards
+        function renderReadings(containerId, date) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const dayData = readingPlan[date];
+            
+            if (!dayData) {
+                container.innerHTML = '<div class="no-readings">No readings available for this date yet.</div>';
+                return;
+            }
+            
+            dayData.readings.forEach((reading, index) => {
+                const card = document.createElement('div');
+                card.className = `reading-card${reading.completed ? ' completed' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="reading-content">
+                        <div class="reading-left">
+                            <div class="reading-icon">
+                                <i class="fas fa-${reading.icon}"></i>
+                            </div>
+                            <div class="reading-text">
+                                <div class="reading-title">${reading.title}</div>
+                                <div class="reading-reference">${reading.reference}</div>
+                                <div class="reading-time">${reading.time} reading time</div>
+                            </div>
+                        </div>
+                        <div class="reading-checkbox${reading.completed ? ' checked' : ''}" onclick="toggleReadingComplete(${index}, '${containerId}')">
+                            ${reading.completed ? '<i class="fas fa-check"></i>' : ''}
+                        </div>
+                    </div>
+                    <div class="reading-actions">
+                        <button class="btn btn-primary" onclick="openReading(${index}, '${date}')">Read Now</button>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        // Toggle reading completion
+        function toggleReadingComplete(index, containerId) {
+            const date = containerId === 'calendar-reading-container' ? 
+                document.querySelector('#calendar-date-title').textContent : currentDate;
+                
+            // Find the date key from the date string
+            const dateKey = containerId === 'calendar-reading-container' ? 
+                getDateKeyFromString(date) : currentDate;
+            
+            if (!readingPlan[dateKey]) return;
+            
+            // Toggle completion
+            readingPlan[dateKey].readings[index].completed = !readingPlan[dateKey].readings[index].completed;
+            
+            // Save to local storage
+            saveReadingProgress();
+            
+            // Re-render the readings
+            renderReadings(containerId, dateKey);
+            
+            // Update progress if on home screen
+            if (containerId === 'reading-container' || dateKey === currentDate) {
+                updateProgress();
+            }
+            
+            // Update monthly progress display
+            updateMonthProgress();
+            
+            // Update calendar display
+            renderCalendar();
+        }
+        
+        // Extract date key from a date string
+        function getDateKeyFromString(dateString) {
+            // Sample input: "Monday, March 17, 2025"
+            // Expected output: "2025-03-17"
+            
+            // Find the matching date in the reading plan
+            for (const dateKey in readingPlan) {
+                if (readingPlan[dateKey].date === dateString) {
+                    return dateKey;
+                }
+            }
+            
+            return null;
+        }
+        
+        // Open a reading in the Bible reader
+        function openReading(index, date) {
+            currentReadingIndex = index;
+            
+            const reading = readingPlan[date].readings[index];
+            
+            // Set the reader title
+            document.getElementById('reader-title').textContent = reading.reference;
+            
+            // Parse the reference to display content - normally would fetch from Bible API
+            const content = getScriptureContent(reading.reference);
+            
+            // Load the content
+            document.getElementById('reader-content').innerHTML = content;
+            
+            // Show the reader screen
+            showScreen('reader-screen');
+        }
+        
+        // Generate scripture content - in a real app, this would be fetched from a Bible API
+        function getScriptureContent(reference) {
+            // Extract book and chapter from reference
+            const bookChapterMatch = reference.match(/([1-3]?\s?[A-Za-z]+)\s+(\d+)/);
+            
+            if (!bookChapterMatch) return '<div class="verse-wrapper">Scripture content unavailable.</div>';
+            
+            const bookChapter = `${bookChapterMatch[1]} ${bookChapterMatch[2]}`;
+            
+            // Check if we have sample verses for this book/chapter
+            if (!sampleVerses[bookChapter]) {
+                return `
+                    <div class="chapter-number">${bookChapterMatch[2]}</div>
+                    <div class="verse-wrapper">
+                        <span class="verse-text">In a production app, this would fetch the actual scripture content from a Bible API for ${reference}.</span>
+                    </div>
+                `;
+            }
+            
+            // Build verses HTML from our sample data
+            let versesHtml = `<div class="chapter-number">${bookChapterMatch[2]}</div>`;
+            
+            sampleVerses[bookChapter].forEach(verse => {
+                versesHtml += `
+                    <div class="verse-wrapper">
+                        <span class="verse-number">${verse.number}</span>
+                        <span class="verse-text">${verse.text}</span>
+                    </div>
+                `;
+            });
+            
+            return versesHtml;
+        }
+        
+        // Open external Bible application or website
+        function openExternalBible() {
+            const reading = readingPlan[currentDate].readings[currentReadingIndex];
+            const reference = encodeURIComponent(reading.reference);
+            
+            // Open YouVersion or Bible Gateway - this is just an example
+            window.open(`https://www.bible.com/bible/1/${reference}`, '_blank');
+        }
+        
+        // Mark reading complete from reader screen
+        function markReaderComplete() {
+            if (currentReadingIndex >= 0) {
+                readingPlan[currentDate].readings[currentReadingIndex].completed = true;
+                
+                // Save to local storage
+                saveReadingProgress();
+                
+                showScreen('home-screen');
+                renderReadings('reading-container', currentDate);
+                updateProgress();
+                updateMonthProgress();
+                
+                // Update calendar display
+                renderCalendar();
+            }
+        }
+        
+        // Change the current date from dropdown
+        function changeDate() {
+            currentDate = document.getElementById('day-selector').value;
+            
+            // Re-render the readings
+            renderReadings('reading-container', currentDate);
+            
+            // Update progress
+            updateProgress();
+        }
+        
+        // Generate calendar
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            // Add day headers
+            const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+            daysOfWeek.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                grid.appendChild(dayHeader);
+            });
+            
+            // Get the first day of the month and total days
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // Get days from previous month
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+            
+            // Add previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day inactive-month';
+                dayElement.textContent = daysInPrevMonth - i;
+                grid.appendChild(dayElement);
+            }
+            
+            // Add current month days
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day active-month';
+                
+                // Format date string for lookup
+                const dateStr = formatDateKey(currentYear, currentMonth, i);
+                
+                // Add today/selected/completed classes
+                if (dateStr === currentDate) {
+                    dayElement.classList.add('selected');
+                }
+                
+                const status = getDayStatus(dateStr);
+                if (status === 'completed') {
+                    dayElement.classList.add('completed');
+                } else if (status === 'partial') {
+                    dayElement.classList.add('partial');
+                }
+                
+                dayElement.textContent = i;
+                dayElement.onclick = () => selectCalendarDay(dateStr);
+                grid.appendChild(dayElement);
+            }
+            
+            // Add next month days to fill grid
+            const totalCells = 42; // 6 rows of 7 days
+            const remainingCells = totalCells - (firstDay + daysInMonth);
+            
+            for (let i = 1; i <= remainingCells; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day inactive-month';
+                dayElement.textContent = i;
+                grid.appendChild(dayElement);
+            }
+            
+            // Update month title
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('calendar-month-title').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+        }
+        
+        // Format date as YYYY-MM-DD
+        function formatDateKey(year, month, day) {
+            return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+        
+        // Get day completion status (for calendar)
+        function getDayStatus(dateStr) {
+            if (!readingPlan[dateStr]) return 'none';
+            
+            const readings = readingPlan[dateStr].readings;
+            const completedCount = readings.filter(reading => reading.completed).length;
+            
+            if (completedCount === 0) return 'none';
+            if (completedCount === readings.length) return 'completed';
+            return 'partial';
+        }
+        
+        // Select a day from the calendar
+        function selectCalendarDay(dateStr) {
+            // Update current date
+            currentDate = dateStr;
+            
+            // Update calendar-date-title
+            document.getElementById('calendar-date-title').textContent = readingPlan[dateStr] ? 
+                readingPlan[dateStr].date : formatDateFromKey(dateStr);
+            
+            // Update day selector
+            document.getElementById('day-selector').value = dateStr;
+            
+            // Render readings for this day
+            renderReadings('calendar-reading-container', dateStr);
+            renderReadings('reading-container', dateStr);
+            
+            // Update progress
+            updateProgress();
+            
+            // Re-render calendar to show selection
+            renderCalendar();
+        }
+        
+        // Format a date key (YYYY-MM-DD) to readable date
+        function formatDateFromKey(dateKey) {
+            const [year, month, day] = dateKey.split('-');
+            const date = new Date(year, month - 1, day);
+            return formatDate(date);
+        }
+        
+        // Change month in calendar
+        function changeMonth(delta) {
+            currentMonth += delta;
+            
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            
+            renderCalendar();
+        }
         
         // Show a specific screen
         function showScreen(screenId) {
@@ -1246,18 +1628,19 @@
             document.getElementById(screenId).classList.add('active');
             
             // Update bottom nav
-            updateBottomNav(screenId);
-        }
-        
-        // Show a specific reader screen
-        function showReaderScreen(readerId) {
-            // Hide all screens
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
+            if (['home-screen', 'calendar-screen', 'settings-screen'].includes(screenId)) {
+                updateBottomNav(screenId);
+            }
             
-            // Show selected reader screen
-            document.getElementById(readerId).classList.add('active');
+            // Initialize calendar if showing calendar screen
+            if (screenId === 'calendar-screen') {
+                // Render calendar readings
+                renderReadings('calendar-reading-container', currentDate);
+                
+                // Update calendar title
+                document.getElementById('calendar-date-title').textContent = readingPlan[currentDate] ? 
+                    readingPlan[currentDate].date : formatDateFromKey(currentDate);
+            }
         }
         
         // Update bottom navigation active state
@@ -1277,62 +1660,250 @@
                 default: navIndex = 0;
             }
             
-            document.querySelectorAll('.bottom-nav .nav-item')[navIndex].classList.add('active');
+            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            if (navItems[navIndex]) {
+                navItems[navIndex].classList.add('active');
+            }
         }
         
-        // Toggle checkbox state
-        function toggleCheckbox(checkbox) {
-            checkbox.classList.toggle('checked');
-            
-            if (checkbox.classList.contains('checked')) {
-                checkbox.innerHTML = '<i class="fas fa-check"></i>';
+        // Update user statistics
+        function updateStats() {
+            // Calculate streak
+            let streak = 0;
+            const today = new Date();
+            for (let i = 0; i < 365; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateKey = formatDateKey(date.getFullYear(), date.getMonth(), date.getDate());
                 
-                // Update progress if this is on the home screen
-                if (document.getElementById('home-screen').classList.contains('active')) {
-                    updateProgress();
-                }
-            } else {
-                checkbox.innerHTML = '';
+                if (!readingPlan[dateKey]) break;
                 
-                // Update progress if this is on the home screen
-                if (document.getElementById('home-screen').classList.contains('active')) {
-                    updateProgress();
+                const readings = readingPlan[dateKey].readings;
+                const allCompleted = readings.every(reading => reading.completed);
+                
+                if (allCompleted) {
+                    streak++;
+                } else {
+                    break;
                 }
             }
+            
+            // Count total readings completed
+            let totalReadings = 0;
+            let completedDays = 0;
+            
+            Object.keys(readingPlan).forEach(date => {
+                const readings = readingPlan[date].readings;
+                const completedReadings = readings.filter(reading => reading.completed).length;
+                totalReadings += completedReadings;
+                
+                if (completedReadings === readings.length) {
+                    completedDays++;
+                }
+            });
+            
+            // Update stats
+            userStats.streak = streak;
+            userStats.totalReadings = totalReadings;
+            userStats.completedDays = completedDays;
+            
+            // Update display
+            document.getElementById('streak-count').textContent = streak;
+            document.getElementById('total-readings').textContent = totalReadings;
+            document.getElementById('completed-days').textContent = completedDays;
         }
         
-        // Mark a reading as complete from the reader screen
-        function markComplete(readingIndex) {
-            showScreen('home-screen');
+        // Storage system with fallback for environments where localStorage isn't available
+        const storage = {
+            // In-memory fallback storage
+            memoryStorage: {
+                readingProgress: null,
+                userSettings: null
+            },
             
-            // Target the specific reading based on index
-            const checkboxes = document.querySelectorAll('#home-screen .reading-card .reading-checkbox');
-            if (checkboxes[readingIndex] && !checkboxes[readingIndex].classList.contains('checked')) {
-                toggleCheckbox(checkboxes[readingIndex]);
+            // Check if localStorage is available
+            isLocalStorageAvailable() {
+                try {
+                    const testKey = '__test__';
+                    localStorage.setItem(testKey, testKey);
+                    localStorage.removeItem(testKey);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            },
+            
+            // Save data with fallback
+            saveItem(key, data) {
+                try {
+                    if (this.isLocalStorageAvailable()) {
+                        localStorage.setItem(key, JSON.stringify(data));
+                    } else {
+                        this.memoryStorage[key] = data;
+                        console.log(`Saved data to memory storage: ${key}`);
+                    }
+                    return true;
+                } catch (error) {
+                    console.error(`Error saving ${key}:`, error);
+                    this.memoryStorage[key] = data;
+                    return false;
+                }
+            },
+            
+            // Load data with fallback
+            loadItem(key) {
+                try {
+                    if (this.isLocalStorageAvailable()) {
+                        const item = localStorage.getItem(key);
+                        return item ? JSON.parse(item) : null;
+                    } else {
+                        console.log(`Loaded data from memory storage: ${key}`);
+                        return this.memoryStorage[key];
+                    }
+                } catch (error) {
+                    console.error(`Error loading ${key}:`, error);
+                    return this.memoryStorage[key];
+                }
+            }
+        };
+        
+        // Save reading progress
+        function saveReadingProgress() {
+            const planData = {};
+            
+            // Only save completion status to keep storage size reasonable
+            Object.keys(readingPlan).forEach(date => {
+                planData[date] = {
+                    readings: readingPlan[date].readings.map(reading => ({
+                        completed: reading.completed
+                    }))
+                };
+            });
+            
+            storage.saveItem('readingProgress', planData);
+        }
+        
+        // Load reading progress
+        function loadReadingProgress() {
+            const planData = storage.loadItem('readingProgress');
+            
+            if (planData) {
+                // Apply saved completion status
+                Object.keys(planData).forEach(date => {
+                    if (readingPlan[date]) {
+                        readingPlan[date].readings.forEach((reading, index) => {
+                            if (planData[date].readings[index]) {
+                                reading.completed = planData[date].readings[index].completed;
+                            }
+                        });
+                    }
+                });
             }
         }
         
-        // Update progress based on checked readings
-        function updateProgress() {
-            const total = 3;
-            const completed = document.querySelectorAll('#home-screen .reading-checkbox.checked').length;
+        // Save user profile
+        function saveUserProfile() {
+            userSettings.name = document.getElementById('display-name-input').value || 'Reader';
             
-            // Update circle
-            setProgressCircle((completed / total) * 100);
+            const success = storage.saveItem('userSettings', userSettings);
             
-            // Update text
-            document.querySelector('.progress-circle > div').textContent = `${completed}/${total}`;
+            // Update UI
+            updateUserDisplay();
             
-            // Update subtitle
-            const subtitle = document.querySelector('.progress-subtitle');
-            if (completed === 0) {
-                subtitle.textContent = "Start your daily readings";
-            } else if (completed === total) {
-                subtitle.textContent = "Great job! All readings complete.";
+            if (success) {
+                alert('Profile saved successfully!');
             } else {
-                subtitle.textContent = `${completed}/${total} readings completed`;
+                alert('Profile saved in memory only. Will be lost when page refreshes.');
             }
         }
+        
+        // Load user profile
+        function loadUserProfile() {
+            const savedSettings = storage.loadItem('userSettings');
+            
+            if (savedSettings) {
+                userSettings = {...userSettings, ...savedSettings};
+            }
+            
+            // Load reading progress
+            loadReadingProgress();
+            
+            // Update UI
+            updateUserDisplay();
+            
+            // Restore form values
+            document.getElementById('display-name-input').value = userSettings.name;
+            document.getElementById('notifications-toggle').checked = userSettings.notificationsEnabled;
+            document.getElementById('reminder-time').value = userSettings.reminderTime;
+            document.getElementById('dark-mode-toggle').checked = userSettings.darkMode;
+            document.getElementById('text-size-selector').value = userSettings.textSize;
+        }
+        
+        // Update user display across screens
+        function updateUserDisplay() {
+            const initial = userSettings.name.charAt(0).toUpperCase();
+            
+            document.getElementById('user-name-display').textContent = userSettings.name;
+            document.getElementById('user-avatar').textContent = initial;
+            document.getElementById('calendar-user-avatar').textContent = initial;
+            document.getElementById('settings-user-avatar').textContent = initial;
+        }
+        
+        // Save notification settings
+        function saveReminderSettings() {
+            userSettings.notificationsEnabled = document.getElementById('notifications-toggle').checked;
+            userSettings.reminderTime = document.getElementById('reminder-time').value;
+            
+            localStorage.setItem('bible-reader-user', JSON.stringify(userSettings));
+            
+            alert('Reminder settings saved!');
+        }
+        
+        // Reset all reading progress
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all your reading progress? This cannot be undone.')) {
+                // Reset all readings to incomplete
+                Object.keys(readingPlan).forEach(date => {
+                    readingPlan[date].readings.forEach(reading => {
+                        reading.completed = false;
+                    });
+                });
+                
+                // Save progress
+                saveReadingProgress();
+                
+                // Update UI
+                renderReadings('reading-container', currentDate);
+                renderCalendar();
+                updateProgress();
+                updateMonthProgress();
+                
+                alert('Reading progress has been reset.');
+            }
+        }
+        
+        // Add notification about storage limitations if localStorage isn't available
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add rest of initialization
+            if (!storage.isLocalStorageAvailable()) {
+                // Create notification banner
+                const banner = document.createElement('div');
+                banner.style.backgroundColor = '#FFF3CD';
+                banner.style.color = '#856404';
+                banner.style.padding = '10px 16px';
+                banner.style.marginBottom = '16px';
+                banner.style.borderRadius = '4px';
+                banner.style.fontSize = '14px';
+                banner.style.textAlign = 'center';
+                banner.innerHTML = '<strong>Notice:</strong> Your progress will only be saved for this session. For full functionality, please use this app on a normal web server.';
+                
+                // Insert at top of main content areas
+                const mainContents = document.querySelectorAll('.main-content');
+                mainContents.forEach(content => {
+                    content.insertBefore(banner.cloneNode(true), content.firstChild);
+                });
+            }
+        });
     </script>
 </body>
 </html>
